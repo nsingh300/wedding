@@ -6,7 +6,7 @@ export const wedding = {
   tagline: 'Together Forever',
   siteUrl: 'https://your-site.vercel.app',
   heroImage: '/images/hero.jpeg', // add your own photo; a soft gradient shows until then
-  musicSrc: '', // e.g. '/audio/theme.mp3' — leave empty to hide the music control
+  musicSrc: '/images/theme.mp3', // e.g. '/audio/theme.mp3' — leave empty to hide the music control
   story: {
     title: 'How we found each other',
     intro: 'Replace this paragraph with your story. Two people, one long conversation that never quite ended.',
