@@ -39,5 +39,15 @@ export async function POST(req: Request) {
     const ins = await client.from('guest_photos').insert(rows);
     if (ins.error) throw ins.error;
     return NextResponse.json({ uploads });
-  } catch { return fail('Upload could not be started. Please try again.', 500); }
+  } catch (err) {
+    console.error('photo sign failed', err);
+    const msg = err instanceof Error ? err.message : (err && typeof err === 'object' && 'message' in err ? String((err as { message: unknown }).message) : '');
+    if (msg.includes('environment variables')) {
+      return fail('Photo upload is not configured. Add the Supabase keys to .env.local and restart the server.', 503);
+    }
+    if (/guest.photos|schema cache|does not exist|bucket/i.test(msg)) {
+      return fail('Photo storage is not set up yet. Run supabase/migrations/002_guest_photos.sql in the Supabase SQL Editor.', 503);
+    }
+    return fail('Upload could not be started. Please try again.', 500);
+  }
 }

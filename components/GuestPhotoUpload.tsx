@@ -1,5 +1,6 @@
 'use client';
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AlertCircle, Camera, CheckCircle2, Loader2, X } from 'lucide-react';
 import { wedding } from '@/config/wedding';
 import { MAX_BYTES, MAX_FILES, PHOTO_TYPES, BUCKET } from '@/lib/upload-rules';
@@ -8,8 +9,10 @@ import { supabaseBrowser } from '@/lib/supabase-browser';
 type Item = { id: number; file: File; url: string; status: 'queued' | 'uploading' | 'done' | 'error' };
 const field = 'w-full border-b border-ink/30 bg-transparent py-3 outline-none transition focus:border-champagne';
 const mb = (n: number) => `${(n / 1048576).toFixed(1)} MB`;
+const uploadConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export default function GuestPhotoUpload() {
+  const router = useRouter();
   const [items, setItems] = useState<Item[]>([]);
   const [name, setName] = useState(''); const [eventId, setEventId] = useState('');
   const [busy, setBusy] = useState(false); const [batch, setBatch] = useState({ done: 0, total: 0 });
@@ -51,6 +54,7 @@ export default function GuestPhotoUpload() {
         setBatch({ done: k + 1, total: todo.length });
       }
       setItems((p) => { p.filter((i) => i.status === 'done').forEach((i) => URL.revokeObjectURL(i.url)); return p.filter((i) => i.status !== 'done'); });
+      if (ok) router.refresh();
       setMsg(ok === todo.length
         ? { ok: true, text: `Thank you, ${name.trim().split(' ')[0]}! ${ok} photo${ok > 1 ? 's' : ''} added to our memories.` }
         : { ok: false, text: `${ok} of ${todo.length} uploaded. The rest failed. Please press Upload photos to retry.` });
@@ -86,9 +90,11 @@ export default function GuestPhotoUpload() {
         {busy && (<div className="mt-6" role="progressbar" aria-valuemin={0} aria-valuemax={batch.total} aria-valuenow={batch.done}>
           <div className="h-1 bg-beige"><div className="h-1 bg-champagne transition-all" style={{ width: `${(batch.done / batch.total) * 100}%` }} /></div>
           <p className="mt-2 text-center text-xs text-ink/60">Uploading {Math.min(batch.done + 1, batch.total)} of {batch.total}. Please keep this page open.</p></div>)}
+        {!uploadConfigured && (<p role="status" className="mt-6 flex items-start gap-2 text-sm text-ink/70">
+          <AlertCircle size={16} className="mt-0.5 shrink-0" />Photo upload will go live once cloud storage keys are added.</p>)}
         {msg && (<p role="alert" className={`mt-6 flex items-start gap-2 text-sm ${msg.ok ? 'text-emerald' : 'text-red-800'}`}>
           {msg.ok ? <CheckCircle2 size={16} className="mt-0.5 shrink-0" /> : <AlertCircle size={16} className="mt-0.5 shrink-0" />}{msg.text}</p>)}
-        <button disabled={busy} className="mt-8 flex w-full items-center justify-center gap-2 bg-emerald py-4 text-ivory disabled:opacity-60">
+        <button disabled={busy || !uploadConfigured} className="mt-8 flex w-full items-center justify-center gap-2 bg-emerald py-4 text-ivory disabled:opacity-60">
           {busy && <Loader2 size={16} className="animate-spin" />}Upload photos</button>
       </form>
     </section>
