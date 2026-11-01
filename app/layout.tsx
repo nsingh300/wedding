@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Jost } from 'next/font/google';
 import { wedding } from '@/config/wedding';
+import SiteMusic from '@/components/SiteMusic';
 import './globals.css';
 
 const serif = Cormorant_Garamond({ subsets: ['latin'], weight: ['300', '400', '500'], style: ['normal', 'italic'], variable: '--font-serif' });
@@ -18,5 +19,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: '#FAF6EE', width: 'device-width', initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (<html lang="en" className={`${serif.variable} ${sans.variable}`}><body className="font-sans font-light">{children}</body></html>);
+  return (<html lang="en" className={`${serif.variable} ${sans.variable}`}><body className="font-sans font-light"><SiteMusic />{children}</body></html>);
 }
