@@ -30,7 +30,7 @@ export const wedding = {
   // Local date/time in IST. Countdown targets the event flagged `countdown: true`.
   events: [
     {
-      id: 'haldi', name: 'Haldi Ceremony', month: 12, day: 2, time: '11:00', durationHrs: 3,
+      id: 'haldi', name: 'Haldi Ceremony', month: 12, day: 2, time: '12:00', durationHrs: 3,
       venue: 'Mana theera Destination Wedding', address: 'Nandi Hills, Bangalore', mapsQuery: 'Mana Theera Destination Wedding', dressCode: 'Yellow & pastels',
       image: '/images/events/haldi.jpg', tint: 'from-amber-200 to-yellow-100'
     },
